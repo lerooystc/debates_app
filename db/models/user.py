@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP
 from db import Base
 from sqlalchemy.orm import relationship
 
-class Users(Base):
+class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     password = Column(String, nullable=False)
