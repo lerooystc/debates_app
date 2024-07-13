@@ -40,3 +40,11 @@ def update_debate(code: str, debate: UpdateDebate, db: Session):
     db.add(old_debate)
     db.commit()
     return old_debate
+
+def delete_debate(code: str, db: Session):
+    debate = db.query(Debate).filter(Debate.access_code == code)
+    if not debate.first():
+        return {"error": "Couldn't find the debate."}
+    debate.delete()
+    db.commit()
+    return {"msg": "Successfully deleted the debate."}
