@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from schemas.debate import DebateCreate
+from schemas.debate import CreateDebate, UpdateDebate
 from db.models.debate import Debate
 import random
 import string
@@ -15,7 +15,7 @@ def generate_access_code(db : Session):
             break
     return code
 
-def create_new_debate(debate: DebateCreate, db: Session):
+def create_new_debate(debate: CreateDebate, db: Session):
     debate = Debate(
         **debate.model_dump(),
         access_code = generate_access_code(db),
@@ -32,3 +32,11 @@ def list_public_debates(db: Session):
     debates = db.query(Debate).filter(Debate.is_private == False).all()
     return debates
 
+def update_debate(code: str, debate: UpdateDebate, db: Session):
+    old_debate = db.query(Debate).filter(Debate.access_code == code).first()
+    if not old_debate:
+        return
+    old_debate.finished = debate.finished
+    db.add(old_debate)
+    db.commit()
+    return old_debate

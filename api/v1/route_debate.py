@@ -1,15 +1,15 @@
 from fastapi import APIRouter, status, HTTPException
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from schemas.debate import DebateCreate, ShowDebate
+from schemas.debate import CreateDebate, ShowDebate, UpdateDebate
 from db.session import get_db
-from db.repository.debate import create_new_debate, retrieve_debate, list_public_debates
+from db.repository.debate import create_new_debate, retrieve_debate, list_public_debates, update_debate
 from typing import List
 
 router = APIRouter()
 
 @router.post("/debates", response_model=ShowDebate, status_code=status.HTTP_201_CREATED)
-async def create_debate(debate: DebateCreate, db: Session = Depends(get_db)):
+async def create_debate(debate: CreateDebate, db: Session = Depends(get_db)):
     debate = create_new_debate(debate=debate,db=db)
     return debate
 
@@ -20,7 +20,14 @@ async def get_debate(code: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Debate not found.")
     return debate
 
-@router.get("/debates", response_model=List[ShowDebate])
+@router.get("/debates", response_model=List[ShowDebate], status_code=status.HTTP_200_OK)
 async def get_public_debates(db: Session = Depends(get_db)):
     debates = list_public_debates(db=db)
     return debates
+
+@router.put("/debates/{code}", response_model=ShowDebate, status_code=status.HTTP_200_OK)
+async def update_debate(code: str, debate: UpdateDebate, db: Session = Depends(get_db)):
+    debate = update_debate(code=code, debate=debate, db=db)
+    if not debate:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Debate not found.")
+    return debate

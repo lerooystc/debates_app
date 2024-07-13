@@ -13,3 +13,4 @@ class Debate(Base):
     side_a = Column(Integer, ForeignKey("user.id"))
     side_b = Column(Integer, ForeignKey("user.id"))
     members = relationship("User", secondary='users_to_debates', back_populates='debates')
+    finished = Column(Boolean, default=False)
