@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from schemas.debate import DebateCreate, ShowDebate
 from db.session import get_db
-from db.repository.debate import create_new_debate, retrieve_debate
+from db.repository.debate import create_new_debate, retrieve_debate, list_public_debates
+from typing import List
 
 router = APIRouter()
 
@@ -18,3 +19,8 @@ async def get_debate(code: str, db: Session = Depends(get_db)):
     if not debate:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Debate not found.")
     return debate
+
+@router.get("/debates", response_model=List[ShowDebate])
+async def get_public_debates(db: Session = Depends(get_db)):
+    debates = list_public_debates(db=db)
+    return debates

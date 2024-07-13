@@ -28,3 +28,7 @@ def create_new_debate(debate: DebateCreate, db: Session):
     db.refresh(debate)
     return debate
 
+def list_public_debates(db: Session):
+    debates = db.query(Debate).filter(Debate.is_private == False).all()
+    return debates
+
