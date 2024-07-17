@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/debates", response_model=ShowDebate, status_code=status.HTTP_201_CREATED)
 async def create_debate(debate: CreateDebate, db: Session = Depends(get_db)):
-    debate = create_new_debate(debate=debate,db=db)
+    debate = create_new_debate(debate=debate,db=db, created_by=1)
     return debate
 
 @router.get("/debates/{code}", response_model=ShowDebate, status_code=status.HTTP_200_OK)

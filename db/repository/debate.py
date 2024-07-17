@@ -15,11 +15,11 @@ def generate_access_code(db : Session):
             break
     return code
 
-def create_new_debate(debate: CreateDebate, db: Session):
+def create_new_debate(debate: CreateDebate, db: Session, created_by: int):
     debate = Debate(
         **debate.model_dump(),
         access_code = generate_access_code(db),
-        created_by = 1,
+        created_by = created_by,
         side_a = 1,
         side_b = 2
         )
