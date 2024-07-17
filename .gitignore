@@ -20,12 +20,12 @@ site_build
 venv
 docs.zip
 archive.zip
-.env 
-.venv 
-env/ 
-venv/ 
-ENV/ 
-env.bak/ 
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
 venv.bak/
 
 # vim temporary files
@@ -35,3 +35,6 @@ venv.bak/
 
 # macOS
 .DS_Store
+
+test_db.db
+test_db.db-journal
