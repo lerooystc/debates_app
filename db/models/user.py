@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from sqlalchemy import Column, Integer, String, TIMESTAMP
 from db import Base
 from sqlalchemy.orm import relationship
@@ -8,5 +8,5 @@ class User(Base):
     name = Column(String, nullable=False)
     password = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    registered_at = Column(TIMESTAMP, default=datetime.utcnow)
+    registered_at = Column(TIMESTAMP, default=datetime.now(UTC))
     debates = relationship("Debate", secondary="users_to_debates", back_populates="members")
