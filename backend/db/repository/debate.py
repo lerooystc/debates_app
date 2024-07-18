@@ -39,20 +39,24 @@ def list_public_debates(db: Session):
     return debates
 
 
-def update_debate(code: str, debate: UpdateDebate, db: Session):
+def update_debate(code: str, debate: UpdateDebate, created_by: int, db: Session):
     old_debate = db.query(Debate).filter(Debate.access_code == code).first()
     if not old_debate:
-        return
+        return {"error": "Debate not found."}
+    if not old_debate.created_by == created_by:
+        return {"error": "Only the author can modify the debate."}
     old_debate.finished = debate.finished
     db.add(old_debate)
     db.commit()
     return old_debate
 
 
-def delete_debate(code: str, db: Session):
+def delete_debate(code: str, created_by: int, db: Session):
     debate = db.query(Debate).filter(Debate.access_code == code)
     if not debate.first():
         return {"error": "Couldn't find the debate."}
+    if not debate.first().created_by == created_by:
+        return {"error": "Only the author can delete the debate."}
     debate.delete()
     db.commit()
     return {"msg": "Successfully deleted the debate."}

@@ -1,5 +1,7 @@
 from typing import List
 
+from api.v1.route_login import get_current_user
+from db import User
 from db.repository.debate import create_new_debate
 from db.repository.debate import delete_debate
 from db.repository.debate import list_public_debates
@@ -19,8 +21,12 @@ router = APIRouter()
 
 
 @router.post("/debates", response_model=ShowDebate, status_code=status.HTTP_201_CREATED)
-async def create_debate(debate: CreateDebate, db: Session = Depends(get_db)):
-    debate = create_new_debate(debate=debate, db=db, created_by=1)
+async def create_debate(
+    debate: CreateDebate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    debate = create_new_debate(debate=debate, db=db, created_by=current_user.id)
     return debate
 
 
@@ -46,10 +52,13 @@ async def get_public_debates(db: Session = Depends(get_db)):
     "/debates/{code}", response_model=ShowDebate, status_code=status.HTTP_200_OK
 )
 async def update_a_debate(
-    code: str, debate: UpdateDebate, db: Session = Depends(get_db)
+    code: str,
+    debate: UpdateDebate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    debate = update_debate(code=code, debate=debate, db=db)
-    if not debate:
+    debate = update_debate(code=code, debate=debate, created_by=current_user.id, db=db)
+    if isinstance(debate, dict):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Debate not found."
         )
@@ -57,8 +66,12 @@ async def update_a_debate(
 
 
 @router.delete("/debates/{code}")
-async def delete_a_debate(code: str, db: Session = Depends(get_db)):
-    message = delete_debate(code=code, db=db)
+async def delete_a_debate(
+    code: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    message = delete_debate(code=code, created_by=current_user.id, db=db)
     if message.get("error"):
         raise HTTPException(
             detail=message.get("error"), status_code=status.HTTP_400_BAD_REQUEST
